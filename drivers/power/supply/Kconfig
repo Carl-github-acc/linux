@@ -798,6 +798,13 @@ config CHARGER_RT5033
 	  The device supports pre-charge mode, fast charge mode and
 	  constant voltage mode.
 
+config BATTERY_RK817
+	bool "RK817 Battery Driver"
+	depends on MFD_RK8XX
+	help
+	  This adds support for the battery for the Rockchip RK817 PMIC.
+	  The battery is an optional device for the RK817 PMIC.
+
 config CHARGER_RT9455
 	tristate "Richtek RT9455 battery charger driver"
 	depends on I2C

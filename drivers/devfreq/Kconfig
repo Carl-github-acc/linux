@@ -129,6 +129,12 @@ config ARM_MEDIATEK_CCI_DEVFREQ
 	  buck voltages and update a proper CCI frequency. Use the notification
 	  to get the regulator status.
 
+config ARM_ROCKCHIP_BUS_DEVFREQ
+	tristate "rockchip bus"
+	depends on ARCH_ROCKCHIP || COMPILE_TEST
+	help
+	  rockchip bus driver
+
 config ARM_RK3399_DMC_DEVFREQ
 	tristate "ARM RK3399 DMC DEVFREQ Driver"
 	depends on (ARCH_ROCKCHIP && HAVE_ARM_SMCCC) || \
