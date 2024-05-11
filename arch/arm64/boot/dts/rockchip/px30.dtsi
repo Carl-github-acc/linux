@@ -1082,6 +1082,8 @@
 		max-frequency = <150000000>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&sdio_bus4 &sdio_cmd &sdio_clk>;
+		assigned-clocks = <&cru SCLK_SDIO>;
+		assigned-clock-parents = <&cru SCLK_SDIO_DIV50>;
 		power-domains = <&power PX30_PD_MMC_NAND>;
 		status = "disabled";
 	};

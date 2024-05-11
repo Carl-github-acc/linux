@@ -87,10 +87,32 @@
 	vdd-supply = <&vcc_lcd>;
 };
 
+&io_domains {
+	/* GRF Register Voltage select control */
+	status = "okay";
+
+	/* SDIO I/O Voltage */
+	vccio1-supply = <&vcc_3v3>;
+	/* SDMMC I/O Voltage */
+	vccio2-supply = <&vccio_sd>;
+	/* CAM I/O Voltage */
+	vccio3-supply = <&vcc_3v3>;
+	/* LVDS/LCDC I/O Voltage */
+	vccio4-supply = <&vcc_3v3>;
+	/* I2S I/O Voltage */
+	vccio5-supply = <&vcc_3v3>;
+	/* eMMC I/O Voltage */
+	vccio6-supply = <&vcc_3v3>;
+};
+
+
 &rk817 {
 	regulators {
 		vcc_wifi: LDO_REG9 {
 			regulator-name = "vcc_wifi";
+			regulator-always-on;
+			regulator-boot-on;
+
 			regulator-min-microvolt = <3300000>;
 			regulator-max-microvolt = <3300000>;
 
@@ -99,6 +121,34 @@
 				regulator-suspend-microvolt = <3300000>;
 			};
 		};
+
+		vcc_3v3: DCDC_REG4 {
+			regulator-always-on;
+			regulator-boot-on;
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-initial-mode = <0x2>;
+			regulator-name = "vcc_3v3";
+			regulator-state-mem {
+				regulator-off-in-suspend;
+				regulator-suspend-microvolt = <3300000>;
+			};
+		};
+
+		vccio_sd: LDO_REG5 {
+			regulator-always-on;
+			regulator-boot-on;
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <3300000>;
+
+			regulator-name = "vccio_sd";
+			regulator-state-mem {
+				regulator-on-in-suspend;
+				regulator-suspend-microvolt = <3300000>;
+			};
+		};
+
+
 	};
 };
 
@@ -113,7 +163,8 @@
 	disable-wp;
 	keep-power-in-suspend;
 	mmc-pwrseq = <&wifi_pwrseq>;
-	non-removable;
+	pm-ignore-notify;
+	/* non-removable; */
 	vmmc-supply = <&vcc_wifi>;
 	#address-cells = <1>;
 	#size-cells = <0>;
