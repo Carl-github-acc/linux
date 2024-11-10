@@ -106,6 +106,13 @@ static const struct mfd_cell rk817s[] = {
 		.num_resources = ARRAY_SIZE(rk817_charger_resources),
 		.resources = &rk817_charger_resources[0],
 	},
+#ifdef CONFIG_BATTERY_RK817
+	{
+		.name = "rk817-battery",
+		.of_compatible = "rk817,battery",
+	},
+#endif
+
 };
 
 static const struct mfd_cell rk818s[] = {
@@ -605,10 +612,12 @@ int rk8xx_probe(struct device *dev, int variant, unsigned int irq, struct regmap
 	int nr_cells;
 	int ret;
 	int i;
+	const struct regmap_irq_chip *battery_irq_chip = NULL;
 
 	rk808 = devm_kzalloc(dev, sizeof(*rk808), GFP_KERNEL);
 	if (!rk808)
 		return -ENOMEM;
+
 	rk808->dev = dev;
 	rk808->variant = variant;
 	rk808->regmap = regmap;
@@ -676,6 +685,19 @@ int rk8xx_probe(struct device *dev, int variant, unsigned int irq, struct regmap
 					     pre_init_reg[i].addr);
 	}
 
+	if (battery_irq_chip) {
+            ret = regmap_add_irq_chip(rk808->regmap, irq,
+                                    IRQF_ONESHOT | IRQF_SHARED, -1,
+                                    battery_irq_chip,
+                                    &rk808->battery_irq_data);
+            if (ret) {
+                    dev_err(dev,
+                            "Failed to add batterry irq_chip %d\n", ret);
+                    regmap_del_irq_chip(irq, rk808->irq_data);
+                    return ret;
+               }
+    }
+
 	ret = devm_mfd_add_devices(dev, PLATFORM_DEVID_AUTO, cells, nr_cells, NULL, 0,
 			      regmap_irq_get_domain(rk808->irq_data));
 	if (ret)
@@ -704,6 +726,8 @@ int rk8xx_probe(struct device *dev, int variant, unsigned int irq, struct regmap
 			break;
 		}
 	}
+
+	device_init_wakeup(dev, true);
 
 	return 0;
 }
